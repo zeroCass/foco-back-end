@@ -4,6 +4,7 @@ require('dotenv').config()
 const app = express()
 const db = require('./config/db')
 
+console.log(process.env.DB_PASSWORD)
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}));
