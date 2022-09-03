@@ -4,7 +4,6 @@ require('dotenv').config()
 const app = express()
 const db = require('./config/db')
 
-console.log(process.env.DB_HOST)
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}));
@@ -20,4 +19,4 @@ app.get('/users', (req, res) => {
         .catch(error => console.log(error))
 })
 
-app.listen(process.env.PORT, () => console.log(`Server running on PORT:${process.env.PORT}`))
+app.listen(3000, () => console.log(`Server running on PORT:${3000}`))
