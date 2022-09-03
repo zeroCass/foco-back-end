@@ -34,4 +34,6 @@ const getUsers = async () => {
     
 }
 
-export default { getUsers }
+module.exports = {
+    getUsers,
+}
