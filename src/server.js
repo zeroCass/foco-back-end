@@ -9,6 +9,6 @@ middlewares(app)
 // import all routes
 routes(app)
 
-// start the server
+// start the server on port 3000
 app.listen(process.env.SERVER_PORT, () => console.log(`Server running on PORT:${process.env.SERVER_PORT}`))
 
