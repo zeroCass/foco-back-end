@@ -4,29 +4,25 @@ const router = express.Router()
 
 
 router.get('/', (req, res) => {
-    const users = db.getUsers()
-    users
-        .then(data => res.json(data))
-        .catch(error => console.log(error))
+    const query = 'select * from users;'
+    db.query(query, (err, result) => {
+            if (err) res.status(400).send({ err })
+            res.status(200).json(result)
+        })
+
 })
 
 router.get('/:id', (req, res) => {
-    const user = db.getUser(req.params.id)
-    user.then(data => res.json(data))
-        .catch(error => console.log(error))
-})
-
-router.post('/', (req, res) => {
-    const user = {
-        name: req.body.name,
-        email: req.body.email,  
-        password: req.body.password,
-        birthDate: req.body.birthDate
-    }
-    console.log('user', user)
-    const response = db.addUser(user)
-        response.then(data => res.json(data))
-                .catch(error => console.log(error))
+    const query = 
+        'select * from users\
+        where users.id = ?;'
+    db.query(query, [req.params.id], (err, result) => {
+        if (err) 
+            res.status(500).send({ err })
+        if (result.length === 0)
+            res.status(400).send(`Usuário com id:${req.params.id} não encontrado.`)
+         res.status(200).json(result)
+    })
 })
 
 module.exports = router
