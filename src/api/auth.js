@@ -3,10 +3,28 @@ const express = require('express')
 const router = express.Router()
 
 
+// get user columns by user TYPE
+const getUserType = async (userId, type) => {
+    try {
+        return await new Promise((resolve, reject) => {
+            const query = 
+            `select * from (select name, email, id as 'idUser' from users) as u, (select * from ${type}) as a\
+            where u.idUser = ? and a.id = u.idUser;`
+            db.query(query, [userId], (err, result) => {
+                if (err) reject(err)
+                resolve(result)
+            })
+
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
 router.post('/signin', (req, res) => {
     const user = {...req.body}
-    const type = req.body.type
 
+    //get the user in database
     const getUserId = async () => {
         try {
             return await new Promise((resolve, reject) => {
@@ -23,35 +41,36 @@ router.post('/signin', (req, res) => {
             console.log(e)
         }
     }
-
-    const getUserType = async (userId) => {
+   
+    const fetchData = async () => {
         try {
-            return await new Promise((resolve, reject) => {
-                const query = 
-                `select u.name, u.email, a.xp, a.points from users u, ${type} a\
-                where u.id = ? and u.id = a.id;`
-                db.query(query, [userId], (err, result) => {
-                    if (err)
-                        reject(err)
-                    resolve(result)
-                })
-            })
-        } catch(e) {
+            const userId = await getUserId()
+            // if user exists, then get the info based on type
+            if (userId.length > 0) {
+                const [ { id } ] = userId
+                const values = ['autonomous', 'dependent', 'godparent']
+                for (let value of values) {
+                    let userType = await getUserType(id, value)
+                    if (userType.length > 0) {
+                        console.log(userType)
+                        res.status(200).json(userType)
+                        return
+                    }
+                }
+                res.status(500).send('Usuario nao encontrado')
+                return
+            }
+            res.status(500).send('Usuario nao encontrado')
+        } catch (e) {
             console.log(e)
         }
         
     }
-
-    getUserId()
-    .then(data => {
-            if (data.length === 0) throw 'Usuario não encontrado.'
-            const [ { id } ] = data
-            getUserType(id)
-            .then(data => res.status(200).json(data))
-        })
-    .catch(e => res.status(400).send(e))
+    fetchData()
+    
     
 })
+
 
 router.post('/signup', (req, res) => {
     const user = {...req.body}

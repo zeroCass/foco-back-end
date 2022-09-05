@@ -1,5 +1,6 @@
 const db = require('../config/db')
 const express = require('express')
+const { reset } = require('nodemon')
 const router = express.Router()
 
 // get all tasks by userID
@@ -23,6 +24,26 @@ router.post('/', (req, res) => {
         task.doneAt, task.startAt, task.priority, task.difficulty, task.category, task.isActive, task.expired, task.missionId ], (err, result) => {
         if (err) res.status(500).json(err)
         res.status(200).json(result)
+    })
+})
+
+// updates a task specify by id
+router.put('/:id', (req, res) => {
+    const taskId = req.params.id
+    const attr = req.body.attr
+    const data = req.body.data
+
+    const query = 
+        `update tasks t
+        set t.${attr} = ?
+        where t.id = ?`
+    db.query(query, [data, taskId], (err, result) => {
+        if (err) {
+            res.status(400).json(err)
+            return
+        }
+        console.log(result)
+        res.status(200)
     })
 })
 
