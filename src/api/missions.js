@@ -20,7 +20,7 @@ const convertDateType = (task) => {
 // get all tasks by userID
 router.get('/:id', (req, res) => {
     const userId = req.params.id
-    const query = 'select * from tasks where tasks.belongId = ?;'
+    const query = 'select * from missions where missions.belongId = ?;'
     db.query(query, [userId], (err, result) => {
         if (err) {
             res.status(500).json(err)
@@ -31,35 +31,21 @@ router.get('/:id', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-    const task = convertDateType({...req.body})  
+    const mission = convertDateType({...req.body}) 
     const query = 
-            'insert into tasks (createId, belongId, name, descr, estimateDate, \
-                initDate, doneAt, startAt, priority, difficulty, category, isActive, expired, missionId) \
-            values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
-    db.query(query, [task.createId, task.belongId, task.name, task.desc, task.estimateDate, task.initDate,
-        task.doneAt, task.startAt, task.priority, task.difficulty, task.category, task.isActive, task.expired, task.missionId ], (err, result) => {
+            'insert into missions (createId, belongId, name, estimateDate, \
+                initDate, doneAt, startAt, priority, difficulty, category, isActive, expired) \
+            values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
+    db.query(query, [mission.createId, mission.belongId, mission.name, mission.estimateDate, mission.initDate,
+        mission.doneAt, mission.startAt, mission.priority, mission.difficulty, mission.category, mission.isActive, mission.expired ], (err, result) => {
         if (err) res.status(500).json(err)
         res.status(200).json(result)
     })
 })
 
-//get all tasks by missionId
-router.get('/mission/:id', (req, res) => {
-    const userId = req.params.id
-    const query = 'select * from tasks where tasks.missionId = ?;'
-    db.query(query, [userId], (err, result) => {
-        if (err) {
-            res.status(500).json(err)
-            return 
-        }
-        res.status(200).json(result)
-    })
-})
-
-
-// updates a task specify by id
+// updates a mission specify by id
 router.put('/:id', (req, res) => {
-    const taskId = req.params.id
+    const missionId = req.params.id
     const attributes = req.body.attr
     const datas = req.body.data
     
@@ -80,11 +66,11 @@ router.put('/:id', (req, res) => {
             : data == 'false'  ? false : data == 'true' ? true : data
 
         let query = 
-        `update tasks t
-        set t.${attr} = ?
-        where t.id = ?`
+        `update missions m
+        set m.${attr} = ?
+        where m.id = ?`
         
-        db.query(query, [defData, taskId], (err, result) => {
+        db.query(query, [defData, missionId], (err, result) => {
             if (err) {
                 responses.push(false)
                 return
@@ -100,7 +86,7 @@ router.put('/:id', (req, res) => {
         return
     }
     res.status(200).send('Ok.')
-
+    
 })
 
 module.exports = router
