@@ -52,7 +52,6 @@ router.post('/signin', (req, res) => {
                 for (let value of values) {
                     let userType = await getUserType(id, value)
                     if (userType.length > 0) {
-                        console.log(userType)
                         res.status(200).json(userType)
                         return
                     }
